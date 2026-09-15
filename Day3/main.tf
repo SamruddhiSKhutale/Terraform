@@ -1,5 +1,5 @@
 resource "aws_vpc" "custom_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
   tags = {
     Name = "vpc_samruddhii"
   }
@@ -7,7 +7,7 @@ resource "aws_vpc" "custom_vpc" {
 
 resource "aws_subnet" "pub_subnet" {
   vpc_id     = aws_vpc.custom_vpc.id
-  cidr_block = "10.0.0.0/24"
+  cidr_block = var.pub_subnet_cidr
   tags = {
     Name = "pub_subnet"
   }
@@ -34,7 +34,7 @@ resource "aws_route_table_association" "subnet_ass_Sam" {
 }
 resource "aws_subnet" "priv_subnet" {
   vpc_id     = aws_vpc.custom_vpc.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.priv_subnet_cidr
   tags = {
     Name = "priv_subnet"
   }
