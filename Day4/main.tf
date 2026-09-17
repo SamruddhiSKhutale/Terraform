@@ -24,8 +24,23 @@ resource "aws_instance" "sam_instance" {
 
 
 resource "aws_s3_bucket" "sam_bucket" {
-    bucket = "sam-bucket-terraform-unique"
+    bucket = "sam-bucket-terraform-uniqueeeeeeeeeeeeeee"
     tags = {
         Name = "sam_bucket"
     }
+}
+resource "aws_db_instance" "sam_rds" {
+  allocated_storage = 20
+  engine            = "mysql"
+  engine_version    = "8.0"
+  instance_class    = "db.t3.micro"
+
+  db_name  = "samdb"
+  username = "admin"
+  password = "Samruddhii123"
+
+  parameter_group_name = "default.mysql8.0"
+
+  skip_final_snapshot = true
+  publicly_accessible = true
 }
