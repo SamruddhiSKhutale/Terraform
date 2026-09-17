@@ -21,7 +21,12 @@ resource "aws_instance" "sam_ec2" {
     Name = "sam_ec2"
   }
 }
-
+resource "aws_s3_bucket" "sam_bucket" {
+  bucket = "sam-bucket-khutale-application"
+  tags ={
+    Name = "sam_bucket"
+  }
+}
 
 
 
