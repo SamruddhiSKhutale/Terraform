@@ -44,3 +44,13 @@ resource "aws_db_instance" "sam_rds" {
   skip_final_snapshot = true
   publicly_accessible = true
 }
+
+
+
+
+
+
+
+
+
+

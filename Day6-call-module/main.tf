@@ -1,0 +1,8 @@
+module "dev" {
+    source = "../Day6-Module"
+    ami = "ami-0b245cc5f82576748"
+    instance_type = "t2.micro"
+    
+   
+    
+}
