@@ -1,9 +1,9 @@
 
 # Key Pair
-resource "aws_key_pair" "example" {
-  key_name   = "task"
-  public_key = file("~/.ssh/id_ed25519.pub")
-}
+# resource "aws_key_pair" "example" {
+#   key_name   = "public"
+#   public_key = file(pathexpand("~/.ssh/id_ed25519.pub"))
+# }
 
 # VPC
 resource "aws_vpc" "myvpc" {
@@ -79,17 +79,17 @@ resource "aws_security_group" "webSg" {
 }
 
 # EC2 Instance (Ubuntu)
-resource "aws_instance" "server" {
-  ami                         = "ami-0261755bbcb8c4a84" # Ubuntu AMI
-  instance_type               = "t2.micro"
-  key_name                    = aws_key_pair.example.key_name
-  subnet_id                   = aws_subnet.sub1.id
-  vpc_security_group_ids      = [aws_security_group.webSg.id]
-  associate_public_ip_address = true
+# resource "aws_instance" "server" {
+#   ami                         = "ami-0b6d9d3d33ba97d99" # Ubuntu AMI
+#   instance_type               = "t2.micro"
+#   key_name                    = "public"
+#   subnet_id                   = aws_subnet.sub1.id
+#   vpc_security_group_ids      = [aws_security_group.webSg.id]
+#   associate_public_ip_address = true
 
-  tags = {
-    Name = "UbuntuServer"
-  }
+#   tags = {
+#     Name = "UbuntuServer"
+#   }
 
 #   connection {
 #     type        = "ssh"
@@ -104,19 +104,75 @@ resource "aws_instance" "server" {
 #     destination = "/home/ubuntu/file10"
 #   }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "touch /home/ubuntu/file200",
-#       "echo 'hello from veera nareshit hyd FDE' >> /home/ubuntu/file200"
-#     ]
+# #   provisioner "remote-exec" {
+# #     inline = [
+# #       "touch /home/ubuntu/file200",
+# #       "echo 'hello from veera nareshit hyd FDE' >> /home/ubuntu/file200"
+# #     ]
 #   }
 
-#    provisioner "local-exec" {
-#     command = "touch file500" 
+# #    provisioner "local-exec" {
+# #     command = "touch file500" 
     
    
-#  }
- }
+# #  }
+#  #}
+
+
+# # }
+
+
+# #Solution-2 to Re-Run the Provisioner
+# #Use terraform taint to manually mark the resource for recreation:
+# # terraform taint aws_instance.server
+# # terraform apply
+
+
+
+resource "aws_key_pair" "example" {
+  key_name   = "terraform-key"
+  public_key = file(pathexpand("~/.ssh/id_ed25519.pub"))
+}
+
+resource "aws_instance" "server" {
+  ami                         = "ami-0b6d9d3d33ba97d99"
+  instance_type               = "t2.micro"
+  key_name                    = aws_key_pair.example.key_name
+  subnet_id                   = aws_subnet.sub1.id
+  vpc_security_group_ids     = [aws_security_group.webSg.id]
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "UbuntuServer"
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file(pathexpand("~/.ssh/id_ed25519"))
+    host        = self.public_ip
+    timeout     = "2m"
+  }
+ # copy local to remote
+  provisioner "file" {
+    source      = "file10"
+    destination = "/home/ubuntu/file10"
+  }
+  # create a file on the remote instance and write content to it
+  
+  provisioner "remote-exec" {
+    inline = [
+      "touch /home/ubuntu/file200",
+      "echo 'hello from veera nareshit hyd FDE' >> /home/ubuntu/file200"
+     ]
+  }
+
+  # Run a local command on the machine where Terraform is executed
+     provisioner "local-exec" {
+   command = "touch file500" 
+    }
+
+}
 
  resource "null_resource" "file" {
     
@@ -154,9 +210,3 @@ resource "null_resource" "run_script" {
   script_hash = filemd5("script.sh") # Rerun only if script changes
 }
 }
-
-
-#Solution-2 to Re-Run the Provisioner
-#Use terraform taint to manually mark the resource for recreation:
-# terraform taint aws_instance.server
-# terraform apply
