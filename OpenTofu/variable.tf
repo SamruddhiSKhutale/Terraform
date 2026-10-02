@@ -25,7 +25,7 @@ variable "subnet_tag" {
 variable "ami" {
   description = "AMI ID for the EC2 instance"
   type        = string
-  default     = "ami-0e34b50e714a297f1"
+  default     = "ami-0d27e0fb3bac4d724"
 }
 
 variable "instance_type" {
